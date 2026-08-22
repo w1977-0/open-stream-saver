@@ -2,12 +2,9 @@ version: 2
 
 project_name: open-stream-saver
 
-before:
-  hooks:
-    - go mod tidy
-
 builds:
   - id: cli
+    dir: cli
     main: ./cmd/open-stream-saver
     binary: open-stream-saver
     env:
@@ -20,6 +17,7 @@ builds:
     goarch: [amd64, arm64]
 
   - id: native-host
+    dir: cli
     main: ./cmd/open-stream-saver-host
     binary: open-stream-saver-host
     env:
