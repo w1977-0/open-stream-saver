@@ -1,0 +1,59 @@
+version: 2
+
+project_name: open-stream-saver
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: cli
+    main: ./cmd/open-stream-saver
+    binary: open-stream-saver
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X github.com/w1977-0/open-stream-saver/cli/internal/app.Version={{ .Version }}
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+
+  - id: native-host
+    main: ./cmd/open-stream-saver-host
+    binary: open-stream-saver-host
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+
+archives:
+  - id: release
+    builds: [cli, native-host]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - README.md
+      - README.zh-CN.md
+      - LICENSE
+      - NOTICE.md
+      - ARCHITECTURE.md
+      - src: extension/**
+        strip_parent: false
+      - src: native-host/**
+        strip_parent: false
+
+checksum:
+  name_template: SHA256SUMS.txt
+
+release:
+  prerelease: auto
+  footer: |
+    ## Notes
+
+    These packages include the Open Stream Saver CLI, its optional Native Messaging host, the unpacked Chrome extension, and host-registration templates. FFmpeg is **not bundled**: install it from your operating system or a trusted upstream distributor. The project supports only user-authorized public, unencrypted media and does not process browser credentials, encryption keys, or DRM-protected content.

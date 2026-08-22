@@ -15,18 +15,33 @@ import (
 
 	"github.com/Eyevinn/hls-m3u8/m3u8"
 	"github.com/w1977-0/open-stream-saver/cli/internal/ffmpeg"
+	"github.com/w1977-0/open-stream-saver/cli/internal/integrity"
 	"github.com/w1977-0/open-stream-saver/cli/internal/progress"
+	"github.com/w1977-0/open-stream-saver/cli/internal/retry"
 	"github.com/w1977-0/open-stream-saver/cli/internal/safety"
 	"golang.org/x/sync/errgroup"
 )
 
-const maxPlaylistBytes = 10 * 1024 * 1024
+const (
+	maxPlaylistBytes = 10 * 1024 * 1024
+	maxWorkers       = 32
+)
 
 type Options struct {
 	Client  *http.Client
 	Workers int
+	Variant int // -1 selects the highest advertised bandwidth from a master playlist.
 	Output  string
 	Writer  io.Writer
+}
+
+type Variant struct {
+	Index            int
+	URI              string
+	Resolution       string
+	Bandwidth        uint32
+	AverageBandwidth uint32
+	Codecs           string
 }
 
 type segment struct {
@@ -34,18 +49,49 @@ type segment struct {
 	url   string
 }
 
-// DownloadMediaPlaylist supports completed, unencrypted media playlists only.
-// Master playlists, live playlists, EXT-X-KEY, EXT-X-MAP, partial segments and
-// byte-range segments are intentionally rejected rather than approximated.
+// Inspect returns the safe media variants advertised by one public HLS master
+// playlist. It rejects encryption and separate renditions rather than trying to
+// reconstruct a protected or multi-track presentation.
+func Inspect(ctx context.Context, rawURL string, client *http.Client) ([]Variant, error) {
+	if client == nil {
+		client = &http.Client{}
+	}
+	playlistURL, err := safety.ValidatePublicURL(rawURL)
+	if err != nil {
+		return nil, err
+	}
+	playlist, err := fetchPlaylist(ctx, client, playlistURL.String())
+	if err != nil {
+		return nil, err
+	}
+	decoded, kind, err := decodePlaylist(playlist)
+	if err != nil {
+		return nil, err
+	}
+	if kind != m3u8.MASTER {
+		return nil, fmt.Errorf("URL is a media playlist, not a master playlist")
+	}
+	master, ok := decoded.(*m3u8.MasterPlaylist)
+	if !ok {
+		return nil, fmt.Errorf("could not read HLS master playlist")
+	}
+	return variantsFromMaster(playlistURL, master)
+}
+
+// DownloadMediaPlaylist saves one completed, unencrypted HLS media playlist.
+// When rawURL points to a master playlist, Variant selects a listed muxed media
+// variant. No cookies, credentials, tokens, custom headers, keys, redirects, or
+// DRM mechanisms are accepted or forwarded.
 func DownloadMediaPlaylist(ctx context.Context, rawURL string, options Options) error {
 	if options.Client == nil {
 		options.Client = &http.Client{}
 	}
-	if options.Workers < 1 {
-		options.Workers = 1
-	}
+	options.Workers = workerCount(options.Workers)
 	if options.Output == "" {
 		return fmt.Errorf("an output file path is required")
+	}
+	if err := ensureNewOutput(options.Output); err != nil {
+		return err
 	}
 
 	playlistURL, err := safety.ValidatePublicURL(rawURL)
@@ -56,7 +102,11 @@ func DownloadMediaPlaylist(ctx context.Context, rawURL string, options Options) 
 	if err != nil {
 		return err
 	}
-	segments, err := parseSegments(playlistURL, playlist)
+	mediaURL, mediaData, err := resolveMediaPlaylist(ctx, playlistURL, playlist, options.Client, options.Variant)
+	if err != nil {
+		return err
+	}
+	segments, err := parseSegments(mediaURL, mediaData)
 	if err != nil {
 		return err
 	}
@@ -115,35 +165,153 @@ func DownloadMediaPlaylist(ctx context.Context, rawURL string, options Options) 
 	if err != nil {
 		return err
 	}
-	return ffmpeg.MergeTS(ctx, concatPath, options.Output)
+	if err := ffmpeg.MergeTS(ctx, concatPath, options.Output); err != nil {
+		return err
+	}
+	return integrity.Report(options.Writer, options.Output)
 }
 
-func fetchPlaylist(ctx context.Context, client *http.Client, rawURL string) ([]byte, error) {
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, rawURL, nil)
+func resolveMediaPlaylist(ctx context.Context, playlistURL *url.URL, data []byte, client *http.Client, requestedVariant int) (*url.URL, []byte, error) {
+	decoded, kind, err := decodePlaylist(data)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	response, err := client.Do(request)
+	if kind == m3u8.MEDIA {
+		return playlistURL, data, nil
+	}
+	if kind != m3u8.MASTER {
+		return nil, nil, fmt.Errorf("unsupported HLS playlist kind")
+	}
+	master, ok := decoded.(*m3u8.MasterPlaylist)
+	if !ok {
+		return nil, nil, fmt.Errorf("could not read HLS master playlist")
+	}
+	variants, err := variantsFromMaster(playlistURL, master)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	defer response.Body.Close()
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("playlist server returned HTTP %d", response.StatusCode)
+	selected, err := chooseVariant(variants, requestedVariant)
+	if err != nil {
+		return nil, nil, err
 	}
-	return io.ReadAll(io.LimitReader(response.Body, maxPlaylistBytes+1))
+	selectedURL, err := safety.ValidatePublicURL(selected.URI)
+	if err != nil {
+		return nil, nil, fmt.Errorf("selected variant is not public: %w", err)
+	}
+	media, err := fetchPlaylist(ctx, client, selectedURL.String())
+	if err != nil {
+		return nil, nil, err
+	}
+	decoded, kind, err = decodePlaylist(media)
+	if err != nil {
+		return nil, nil, err
+	}
+	if kind == m3u8.MASTER {
+		return nil, nil, fmt.Errorf("nested master playlists are not supported")
+	}
+	if kind != m3u8.MEDIA {
+		return nil, nil, fmt.Errorf("selected variant is not a media playlist")
+	}
+	return selectedURL, media, nil
 }
 
-func parseSegments(playlistURL *url.URL, data []byte) ([]segment, error) {
+func variantsFromMaster(playlistURL *url.URL, master *m3u8.MasterPlaylist) ([]Variant, error) {
+	if len(master.SessionKeys) > 0 || master.ContentSteering != nil {
+		return nil, fmt.Errorf("encrypted or content-steered HLS master playlists are not supported")
+	}
+	variants := make([]Variant, 0, len(master.Variants))
+	for index, item := range master.Variants {
+		if item == nil || item.URI == "" || item.Iframe {
+			continue
+		}
+		if item.Audio != "" || item.Video != "" || item.Subtitles != "" || item.Captions != "" {
+			return nil, fmt.Errorf("separate audio, video, subtitle, or caption renditions are not supported")
+		}
+		resolved, err := playlistURL.Parse(item.URI)
+		if err != nil || (resolved.Scheme != "http" && resolved.Scheme != "https") {
+			return nil, fmt.Errorf("master playlist contains a non-HTTP variant URL")
+		}
+		if _, err := safety.ValidatePublicURL(resolved.String()); err != nil {
+			return nil, fmt.Errorf("master playlist contains a non-public variant URL")
+		}
+		variants = append(variants, Variant{
+			Index: index, URI: resolved.String(), Resolution: item.Resolution,
+			Bandwidth: item.Bandwidth, AverageBandwidth: item.AverageBandwidth, Codecs: item.Codecs,
+		})
+	}
+	if len(variants) == 0 {
+		return nil, fmt.Errorf("master playlist has no supported muxed media variants")
+	}
+	return variants, nil
+}
+
+func chooseVariant(variants []Variant, requested int) (Variant, error) {
+	if requested >= 0 {
+		for _, item := range variants {
+			if item.Index == requested {
+				return item, nil
+			}
+		}
+		return Variant{}, fmt.Errorf("variant %d is not available", requested)
+	}
+	best := variants[0]
+	for _, item := range variants[1:] {
+		if item.Bandwidth > best.Bandwidth {
+			best = item
+		}
+	}
+	return best, nil
+}
+
+func decodePlaylist(data []byte) (m3u8.Playlist, m3u8.ListType, error) {
 	if len(data) > maxPlaylistBytes {
-		return nil, fmt.Errorf("playlist exceeds the local size limit")
+		return nil, 0, fmt.Errorf("playlist exceeds the local size limit")
 	}
 	decoded, kind, err := m3u8.DecodeFrom(bytes.NewReader(data), true)
 	if err != nil {
-		return nil, fmt.Errorf("could not parse HLS playlist: %w", err)
+		return nil, 0, fmt.Errorf("could not parse HLS playlist: %w", err)
+	}
+	return decoded, kind, nil
+}
+
+func fetchPlaylist(ctx context.Context, client *http.Client, rawURL string) ([]byte, error) {
+	var data []byte
+	err := retry.Do(ctx, 0, func() (error, bool) {
+		request, err := http.NewRequestWithContext(ctx, http.MethodGet, rawURL, nil)
+		if err != nil {
+			return err, false
+		}
+		response, err := client.Do(request)
+		if err != nil {
+			return err, true
+		}
+		defer response.Body.Close()
+		if response.StatusCode != http.StatusOK {
+			return fmt.Errorf("playlist server returned HTTP %d", response.StatusCode), retryableStatus(response.StatusCode)
+		}
+		body, err := io.ReadAll(io.LimitReader(response.Body, maxPlaylistBytes+1))
+		if err != nil {
+			return err, true
+		}
+		if len(body) > maxPlaylistBytes {
+			return fmt.Errorf("playlist exceeds the local size limit"), false
+		}
+		data = body
+		return nil, false
+	})
+	return data, err
+}
+
+func parseSegments(playlistURL *url.URL, data []byte) ([]segment, error) {
+	decoded, kind, err := decodePlaylist(data)
+	if err != nil {
+		return nil, err
+	}
+	if kind == m3u8.MASTER {
+		return nil, fmt.Errorf("master playlists must be resolved before parsing segments")
 	}
 	if kind != m3u8.MEDIA {
-		return nil, fmt.Errorf("master playlists are not supported; provide one completed, unencrypted media playlist")
+		return nil, fmt.Errorf("expected a completed, unencrypted media playlist")
 	}
 	media, ok := decoded.(*m3u8.MediaPlaylist)
 	if !ok || !media.Closed {
@@ -162,7 +330,7 @@ func parseSegments(playlistURL *url.URL, data []byte) ([]segment, error) {
 			return nil, fmt.Errorf("protected, byte-range, or unavailable HLS segments are not supported")
 		}
 		resolved, err := playlistURL.Parse(item.URI)
-		if err != nil || resolved.Scheme != "http" && resolved.Scheme != "https" {
+		if err != nil || (resolved.Scheme != "http" && resolved.Scheme != "https") {
 			return nil, fmt.Errorf("playlist contains a non-HTTP segment URL")
 		}
 		if _, err := safety.ValidatePublicURL(resolved.String()); err != nil {
@@ -175,40 +343,40 @@ func parseSegments(playlistURL *url.URL, data []byte) ([]segment, error) {
 
 func downloadSegment(ctx context.Context, client *http.Client, directory string, item segment) (string, error) {
 	path := filepath.Join(directory, fmt.Sprintf("%08d.ts", item.index))
-	var lastErr error
-	for attempt := 1; attempt <= 3; attempt++ {
+	err := retry.Do(ctx, 0, func() (error, bool) {
 		request, err := http.NewRequestWithContext(ctx, http.MethodGet, item.url, nil)
 		if err != nil {
-			return "", err
+			return err, false
 		}
 		response, err := client.Do(request)
-		if err == nil && response.StatusCode == http.StatusOK {
-			file, createErr := os.Create(path)
-			if createErr == nil {
-				_, copyErr := io.Copy(file, io.LimitReader(response.Body, 256*1024*1024))
-				closeErr := file.Close()
-				response.Body.Close()
-				if copyErr == nil && closeErr == nil {
-					return path, nil
-				}
-				lastErr = firstError(copyErr, closeErr)
-			} else {
-				lastErr = createErr
-				response.Body.Close()
-			}
-		} else {
-			if response != nil {
-				response.Body.Close()
-			}
-			if err != nil {
-				lastErr = err
-			} else {
-				lastErr = fmt.Errorf("segment server returned HTTP %d", response.StatusCode)
-			}
+		if err != nil {
+			return err, true
 		}
+		defer response.Body.Close()
+		if response.StatusCode != http.StatusOK {
+			return fmt.Errorf("segment server returned HTTP %d", response.StatusCode), retryableStatus(response.StatusCode)
+		}
+		file, err := os.Create(path)
+		if err != nil {
+			return err, false
+		}
+		_, copyErr := io.Copy(file, io.LimitReader(response.Body, 256*1024*1024))
+		closeErr := file.Close()
+		if copyErr != nil {
+			_ = os.Remove(path)
+			return copyErr, true
+		}
+		if closeErr != nil {
+			_ = os.Remove(path)
+			return closeErr, true
+		}
+		return nil, false
+	})
+	if err != nil {
 		_ = os.Remove(path)
+		return "", fmt.Errorf("segment %d failed after bounded retries: %w", item.index, err)
 	}
-	return "", fmt.Errorf("segment %d failed after 3 attempts: %w", item.index, lastErr)
+	return path, nil
 }
 
 func writeConcatFile(directory string, paths []string) (string, error) {
@@ -217,23 +385,41 @@ func writeConcatFile(directory string, paths []string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer file.Close()
 	for _, item := range paths {
 		if strings.Contains(item, "'") {
+			_ = file.Close()
 			return "", fmt.Errorf("unexpected quote in temporary path")
 		}
 		if _, err := fmt.Fprintf(file, "file '%s'\n", item); err != nil {
+			_ = file.Close()
 			return "", err
 		}
 	}
-	return path, file.Close()
+	if err := file.Close(); err != nil {
+		return "", err
+	}
+	return path, nil
 }
 
-func firstError(errors ...error) error {
-	for _, err := range errors {
-		if err != nil {
-			return err
-		}
+func retryableStatus(status int) bool {
+	return status == http.StatusRequestTimeout || status == http.StatusTooEarly || status == http.StatusTooManyRequests || status >= 500
+}
+
+func workerCount(workers int) int {
+	if workers < 1 {
+		return 1
+	}
+	if workers > maxWorkers {
+		return maxWorkers
+	}
+	return workers
+}
+
+func ensureNewOutput(output string) error {
+	if _, err := os.Lstat(output); err == nil {
+		return fmt.Errorf("refusing to overwrite existing output: %s", output)
+	} else if !os.IsNotExist(err) {
+		return err
 	}
 	return nil
 }

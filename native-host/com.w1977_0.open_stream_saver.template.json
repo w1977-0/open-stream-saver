@@ -1,0 +1,9 @@
+{
+  "name": "com.w1977_0.open_stream_saver",
+  "description": "Open Stream Saver local download host",
+  "path": "/ABSOLUTE/PATH/TO/open-stream-saver-host",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://REPLACE_WITH_YOUR_EXTENSION_ID/"
+  ]
+}

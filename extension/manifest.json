@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Open Stream Saver",
-  "version": "0.1.0",
-  "description": "Locally discovers public media URLs for content you are allowed to save.",
-  "permissions": ["webRequest", "storage", "activeTab", "permissions"],
+  "version": "0.2.0",
+  "description": "Locally discovers public, authorized media URLs and can send reviewed tasks to an opt-in local host.",
+  "permissions": ["webRequest", "storage", "activeTab", "permissions", "nativeMessaging"],
   "optional_host_permissions": ["http://*/*", "https://*/*"],
   "background": {
     "service_worker": "background.js",

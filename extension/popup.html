@@ -27,6 +27,12 @@
         <button id="toggle-discovery" class="primary" type="button">Enable discovery</button>
       </section>
 
+      <label class="rights-check" for="acknowledge-rights">
+        <input id="acknowledge-rights" type="checkbox" />
+        <span>I have the right to save the selected public media.</span>
+      </label>
+      <p id="save-status" class="save-status" aria-live="polite">Local saving is off until you confirm your rights and install the optional local host.</p>
+
       <section class="results-head">
         <div>
           <p class="label">CURRENT TAB</p>
@@ -35,11 +41,11 @@
         <button id="clear" class="text-button" type="button">Clear</button>
       </section>
 
-      <p id="empty-state" class="empty-state">No public .m3u8 or .mp4 requests have been recorded for this tab yet.</p>
+      <p id="empty-state" class="empty-state">No public .m3u8, .mpd, or .mp4 requests have been recorded for this tab yet.</p>
       <ul id="stream-list" class="stream-list" aria-label="Discovered media links"></ul>
 
       <footer>
-        This extension does not bypass login, subscription, regional, or DRM protections. Use the CLI only for content you are authorized to save.
+        This extension does not bypass login, subscription, regional, encryption, or DRM protections. The local host receives only your reviewed URL and safe file name.
       </footer>
     </main>
     <script src="popup.js"></script>

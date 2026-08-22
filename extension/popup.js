@@ -13,9 +13,15 @@ function setStatus(enabled) {
   state.enabled = enabled;
   $("#status-title").textContent = enabled ? "Discovery is on" : "Discovery is off";
   $("#status-copy").textContent = enabled
-    ? "This session is observing public .m3u8 and .mp4 requests. It does not collect credentials or modify traffic."
+    ? "This session is observing public .m3u8, .mpd, and .mp4 requests. It does not collect credentials or modify traffic."
     : "Turn it on to allow this extension to observe public HTTP(S) media requests in the current browser session.";
   $("#toggle-discovery").textContent = enabled ? "Disable discovery" : "Enable discovery";
+}
+
+function setSaveStatus(text, type = "") {
+  const element = $("#save-status");
+  element.textContent = text;
+  element.dataset.state = type;
 }
 
 function formatTime(timestamp) {
@@ -34,6 +40,41 @@ async function copyCommand(url, button) {
   window.setTimeout(() => {
     button.textContent = original;
   }, 1200);
+}
+
+async function saveLocally(stream, button, variantInput) {
+  if (!$("#acknowledge-rights").checked) {
+    setSaveStatus("Confirm your right to save this public media before sending any local task.", "error");
+    return;
+  }
+  const original = button.textContent;
+  button.disabled = true;
+  button.textContent = "Saving locally…";
+  setSaveStatus("The local host is validating the public URL and starting a bounded download.");
+  const variant = Number(variantInput?.value ?? -1);
+  try {
+    const response = await chrome.runtime.sendMessage({
+      type: "saveLocally",
+      url: stream.url,
+      acknowledgeRights: true,
+      workers: 4,
+      variant: Number.isInteger(variant) ? variant : -1,
+    });
+    if (!response?.ok) {
+      throw new Error(response?.error || "The local host could not start the download.");
+    }
+    setSaveStatus(`Saved locally: ${response.output}`, "success");
+    button.textContent = "Saved";
+  } catch (error) {
+    const message = error?.message || "The local host could not start the download.";
+    setSaveStatus(`${message} Install and register the optional native host, then try again.`, "error");
+    button.textContent = "Save locally";
+  } finally {
+    button.disabled = false;
+    window.setTimeout(() => {
+      if (button.textContent === "Saved") button.textContent = original;
+    }, 1800);
+  }
 }
 
 function renderStreams(streams) {
@@ -64,13 +105,36 @@ function renderStreams(streams) {
     url.title = stream.url;
     metadata.append(top, url);
 
+    const actions = document.createElement("div");
+    actions.className = "stream-actions";
+    let variantInput;
+    if (stream.kind === "m3u8") {
+      const variant = document.createElement("label");
+      variant.className = "variant-control";
+      variant.textContent = "HLS variant";
+      variantInput = document.createElement("input");
+      variantInput.type = "number";
+      variantInput.min = "-1";
+      variantInput.value = "-1";
+      variantInput.title = "-1 selects the highest advertised muxed variant. Use the CLI inspect-hls command to list indices.";
+      variant.append(variantInput);
+      actions.append(variant);
+    }
+
+    const save = document.createElement("button");
+    save.className = "primary compact";
+    save.type = "button";
+    save.textContent = "Save locally";
+    save.addEventListener("click", () => saveLocally(stream, save, variantInput));
+
     const copy = document.createElement("button");
-    copy.className = "secondary";
+    copy.className = "secondary compact";
     copy.type = "button";
     copy.textContent = "Copy CLI command";
     copy.addEventListener("click", () => copyCommand(stream.url, copy));
 
-    item.append(metadata, copy);
+    actions.append(save, copy);
+    item.append(metadata, actions);
     list.append(item);
   }
 }

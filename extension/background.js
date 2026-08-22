@@ -1,6 +1,7 @@
 const OPTIONAL_ORIGINS = ["http://*/*", "https://*/*"];
 const MAX_STREAMS_PER_TAB = 40;
 const MAX_URL_LENGTH = 4096;
+const NATIVE_HOST = "com.w1977_0.open_stream_saver";
 
 function storageKey(tabId) {
   return `streams:${tabId}`;
@@ -12,14 +13,23 @@ function isCandidate(url) {
     const parsed = new URL(url);
     if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return false;
     const pathname = parsed.pathname.toLowerCase();
-    return pathname.endsWith(".m3u8") || pathname.endsWith(".mp4");
+    return pathname.endsWith(".m3u8") || pathname.endsWith(".mp4") || pathname.endsWith(".mpd");
   } catch {
     return false;
   }
 }
 
 function kindFor(url) {
-  return new URL(url).pathname.toLowerCase().endsWith(".m3u8") ? "m3u8" : "mp4";
+  const pathname = new URL(url).pathname.toLowerCase();
+  if (pathname.endsWith(".m3u8")) return "m3u8";
+  if (pathname.endsWith(".mpd")) return "mpd";
+  return "mp4";
+}
+
+function safeFileName(value) {
+  if (typeof value !== "string" || value.length === 0 || value.length > 180) return undefined;
+  if (value.includes("/") || value.includes("\\") || value === "." || value === "..") return undefined;
+  return value;
 }
 
 async function recordCandidate(details) {
@@ -58,6 +68,26 @@ async function syncObserver() {
   if (!enabled && registered) {
     chrome.webRequest.onCompleted.removeListener(recordCandidate);
   }
+}
+
+async function requestLocalSave(message) {
+  if (!message?.acknowledgeRights) {
+    return { error: "Confirm that you have the right to save this public media first." };
+  }
+  if (!isCandidate(message.url)) {
+    return { error: "Only discovered public HTTP(S) .mp4, .m3u8, or .mpd URLs can be sent locally." };
+  }
+  const workers = Number(message.workers);
+  const variant = Number(message.variant);
+  const response = await chrome.runtime.sendNativeMessage(NATIVE_HOST, {
+    action: "download",
+    url: message.url,
+    fileName: safeFileName(message.fileName),
+    workers: Number.isInteger(workers) && workers >= 1 && workers <= 32 ? workers : 4,
+    variant: Number.isInteger(variant) ? variant : -1,
+    acknowledgeRights: true,
+  });
+  return response || { error: "The local host returned no response." };
 }
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -105,6 +135,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         }
         return { cleared: true };
       }
+      case "saveLocally":
+        return requestLocalSave(message);
       default:
         return { error: "Unknown message." };
     }
