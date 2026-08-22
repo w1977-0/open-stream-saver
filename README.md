@@ -1,4 +1,4 @@
-# Open Stream Saver
+# Media Archiver
 
 <p align="center">
   <strong>A local-first Chrome MV3 companion and Go CLI for user-authorized public media.</strong>
@@ -16,10 +16,14 @@
 [![Go](https://img.shields.io/badge/Go-1.25%2B-00ADD8?logo=go&logoColor=white)](https://go.dev/)
 [![Manifest V3](https://img.shields.io/badge/Chrome-Manifest%20V3-4285F4?logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/)
 [![License](https://img.shields.io/badge/License-Apache--2.0-1769E0)](LICENSE)
-[![Build](https://github.com/w1977-0/open-stream-saver/actions/workflows/release.yml/badge.svg)](https://github.com/w1977-0/open-stream-saver/actions/workflows/release.yml)
-[![Release](https://img.shields.io/github/v/release/w1977-0/open-stream-saver?display_name=tag&sort=semver)](../../releases)
+[![Build](https://github.com/w1977-0/media-archiver/actions/workflows/release.yml/badge.svg)](https://github.com/w1977-0/media-archiver/actions/workflows/release.yml)
+[![Release](https://img.shields.io/github/v/release/w1977-0/media-archiver?display_name=tag&sort=semver)](../../releases)
 
-Open Stream Saver helps a user review and save **public media they are already authorized to archive**. Its Chrome Manifest V3 extension observes eligible public `.mp4`, `.m3u8`, and `.mpd` requests in the current tab. The Go engine saves one direct file, completed unencrypted HLS presentation, or static unencrypted DASH presentation after an explicit acknowledgement of rights.
+Media Archiver helps a user review and save **public media they are already authorized to archive**. Its Chrome Manifest V3 extension observes eligible public `.mp4`, `.m3u8`, and `.mpd` requests in the current tab. The Go engine saves one direct file, completed unencrypted HLS presentation, or static unencrypted DASH presentation after an explicit acknowledgement of rights.
+
+## Product relationship
+
+**Media Archiver is the formal cross-platform core**: a Go CLI plus Chrome Manifest V3 companion for transparent, local-first handling of authorized public media. [Media Saver](https://github.com/w1977-0/media-saver) is its earlier research-stage local GUI, built with Python, Flask, and Streamlit for a simpler on-device workflow. The projects are deliberately complementary rather than duplicate implementations: this repository is the maintained CLI and browser-extension foundation.
 
 > **Authorization and privacy are design constraints.** The project neither collects nor forwards cookies, authorization headers, tokens, credentials, page bodies, browser storage, encryption keys, or DRM material. It does not bypass logins, subscriptions, paywalls, regional restrictions, proxy controls, encryption, or DRM.
 
@@ -57,7 +61,7 @@ The browser component never intercepts page scripts, rewrites `fetch`/`XMLHttpRe
 With Go 1.25+ installed, this command installs the CLI from the tagged source:
 
 ```bash
-go install github.com/w1977-0/open-stream-saver/cli/cmd/open-stream-saver@latest
+go install github.com/w1977-0/media-archiver/cli/cmd/open-stream-saver@latest
 ```
 
 Alternatively, download your platform archive from [Releases](../../releases). HLS and DASH remux require a locally installed **FFmpeg** on `PATH`; direct-file downloads do not.
@@ -96,7 +100,7 @@ Until an appropriate browser-store review is completed, load the unpacked extens
 
 The local-save button is opt-in. Install and register the `open-stream-saver-host` binary using the [Native Messaging host guide](native-host/README.md). Its manifest must list your exact extension ID, so another extension cannot use it.
 
-![Open Stream Saver local workflow: enable read-only discovery, confirm rights, then save locally](docs/assets/local-workflow.gif)
+![Media Archiver local workflow: enable read-only discovery, confirm rights, then save locally](docs/assets/local-workflow.gif)
 
 The extension keeps at most 40 URL records per tab in session storage and removes them when the tab closes. It does not send data to a remote service and does not read cookies, headers, page bodies, or account information.
 
@@ -115,8 +119,8 @@ The extension keeps at most 40 URL records per tab in session storage and remove
 ## Build from source
 
 ```bash
-git clone https://github.com/w1977-0/open-stream-saver.git
-cd open-stream-saver/cli
+git clone https://github.com/w1977-0/media-archiver.git
+cd media-archiver/cli
 go test ./...
 go vet ./...
 go build -o ../bin/open-stream-saver ./cmd/open-stream-saver

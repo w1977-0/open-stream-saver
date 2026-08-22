@@ -1,4 +1,4 @@
-# Contributing to Open Stream Saver
+# Contributing to Media Archiver
 
 Thank you for considering a contribution. This is a small project with a deliberately limited purpose: improve local handling of media that the user is **already authorized** to save. We value clear reasoning, respectful review, reproducible tests, and changes that make the project safer or easier to understand.
 
@@ -26,8 +26,8 @@ The repository contains two independently runnable components.
 
 ```bash
 # Clone the project
-git clone https://github.com/w1977-0/open-stream-saver.git
-cd open-stream-saver
+git clone https://github.com/w1977-0/media-archiver.git
+cd media-archiver
 
 # Test the Go CLI
 cd cli

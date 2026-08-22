@@ -1,6 +1,6 @@
 version: 2
 
-project_name: open-stream-saver
+project_name: media-archiver
 
 builds:
   - id: cli
@@ -54,4 +54,4 @@ release:
   footer: |
     ## Notes
 
-    These packages include the Open Stream Saver CLI, its optional Native Messaging host, the unpacked Chrome extension, and host-registration templates. FFmpeg is **not bundled**: install it from your operating system or a trusted upstream distributor. The project supports only user-authorized public, unencrypted media and does not process browser credentials, encryption keys, or DRM-protected content.
+    These packages include the Media Archiver CLI, its optional Native Messaging host, the unpacked Chrome extension, and host-registration templates. FFmpeg is **not bundled**: install it from your operating system or a trusted upstream distributor. The project supports only user-authorized public, unencrypted media and does not process browser credentials, encryption keys, or DRM-protected content.
