@@ -32,6 +32,18 @@ jobs:
         run: |
           go test ./...
           go vet ./...
+      - name: Smoke-test CLI install
+        shell: bash
+        working-directory: cli
+        run: |
+          export GOBIN="$RUNNER_TEMP/media-archiver-bin"
+          mkdir -p "$GOBIN"
+          go install ./cmd/open-stream-saver
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            "$GOBIN/open-stream-saver.exe" --help
+          else
+            "$GOBIN/open-stream-saver" --help
+          fi
       - name: Check extension assets
         shell: bash
         run: |

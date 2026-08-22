@@ -64,7 +64,7 @@ With Go 1.25+ installed, this command installs the CLI from the tagged source:
 go install github.com/w1977-0/media-archiver/cli/cmd/open-stream-saver@latest
 ```
 
-Alternatively, download your platform archive from [Releases](../../releases). HLS and DASH remux require a locally installed **FFmpeg** on `PATH`; direct-file downloads do not.
+Alternatively, download your platform archive from [Releases](../../releases). HLS and DASH remux require a locally installed **FFmpeg** on `PATH`; direct-file downloads do not. Use the [installation verification checklist](docs/INSTALLATION_VERIFICATION.md) for expected results from a canonical module install, source build, FFmpeg check, and unpacked extension load.
 
 ```bash
 # Review the URL and use only when you have permission to save the public media.
