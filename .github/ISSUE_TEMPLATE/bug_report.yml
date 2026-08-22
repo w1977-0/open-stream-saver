@@ -1,0 +1,43 @@
+name: Bug report
+description: Report a reproducible problem without sharing private or protected content.
+title: "bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve the project. Do not include private URLs, account data, cookies, tokens, authorization headers, DRM keys, or material you are not authorized to share.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - Chrome extension
+        - Go CLI
+        - Documentation
+        - Build or release
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: What happened?
+      description: Include a minimal, non-sensitive reproduction and the expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system, Chrome version or CLI version, and sanitized command output.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I removed credentials, personal information, private links, and protected media from this report.
+          required: true
+        - label: This report does not request a DRM, login, paywall, subscription, or regional-restriction bypass.
+          required: true

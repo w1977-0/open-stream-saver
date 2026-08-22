@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Open Stream Saver</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <p class="eyebrow">LOCAL · EXPLICIT · AUTHORIZED USE</p>
+        <h1>Open Stream Saver</h1>
+        <p class="intro">Discover public media URLs in this tab only when you have permission to save the content.</p>
+      </header>
+
+      <section class="notice" aria-label="Safety boundary">
+        <strong>Read-only discovery.</strong>
+        <span>No cookies, request headers, credentials, DRM keys, or traffic changes are collected.</span>
+      </section>
+
+      <section class="control-card" aria-live="polite">
+        <div>
+          <h2 id="status-title">Discovery is off</h2>
+          <p id="status-copy">Turn it on to allow this extension to observe public HTTP(S) media requests in the current browser session.</p>
+        </div>
+        <button id="toggle-discovery" class="primary" type="button">Enable discovery</button>
+      </section>
+
+      <section class="results-head">
+        <div>
+          <p class="label">CURRENT TAB</p>
+          <h2>Discovered links</h2>
+        </div>
+        <button id="clear" class="text-button" type="button">Clear</button>
+      </section>
+
+      <p id="empty-state" class="empty-state">No public .m3u8 or .mp4 requests have been recorded for this tab yet.</p>
+      <ul id="stream-list" class="stream-list" aria-label="Discovered media links"></ul>
+
+      <footer>
+        This extension does not bypass login, subscription, regional, or DRM protections. Use the CLI only for content you are authorized to save.
+      </footer>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>

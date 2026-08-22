@@ -1,0 +1,16 @@
+# Local build outputs
+/dist-check/
+/dist/
+/bin/
+
+# Go build and test artifacts
+/cli/open-stream-saver
+/cli/*.exe
+/cli/coverage.out
+
+# Chrome extension local development
+/extension/.cache/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
