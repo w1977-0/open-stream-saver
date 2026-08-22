@@ -14,11 +14,11 @@ import (
 	"sync"
 
 	"github.com/Eyevinn/hls-m3u8/m3u8"
-	"github.com/w1977-0/open-stream-saver/cli/internal/ffmpeg"
-	"github.com/w1977-0/open-stream-saver/cli/internal/integrity"
-	"github.com/w1977-0/open-stream-saver/cli/internal/progress"
-	"github.com/w1977-0/open-stream-saver/cli/internal/retry"
-	"github.com/w1977-0/open-stream-saver/cli/internal/safety"
+	"github.com/w1977-0/media-archiver/cli/internal/ffmpeg"
+	"github.com/w1977-0/media-archiver/cli/internal/integrity"
+	"github.com/w1977-0/media-archiver/cli/internal/progress"
+	"github.com/w1977-0/media-archiver/cli/internal/retry"
+	"github.com/w1977-0/media-archiver/cli/internal/safety"
 	"golang.org/x/sync/errgroup"
 )
 

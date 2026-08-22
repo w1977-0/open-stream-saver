@@ -12,7 +12,7 @@ builds:
     flags:
       - -trimpath
     ldflags:
-      - -s -w -X github.com/w1977-0/open-stream-saver/cli/internal/app.Version={{ .Version }}
+      - -s -w -X github.com/w1977-0/media-archiver/cli/internal/app.Version={{ .Version }}
     goos: [linux, darwin, windows]
     goarch: [amd64, arm64]
 
