@@ -29,11 +29,10 @@ Contributions are welcome when they make the project safer, easier to use, more 
 Please fork the repository, create a focused branch, and run these checks before opening a pull request:
 
 ```bash
-cd cli
-go test ./...
-go vet ./...
-node --check ../extension/background.js
-node --check ../extension/popup.js
+go test ./cli/...
+go vet ./cli/...
+node --check extension/background.js
+node --check extension/popup.js
 ```
 
 In a pull request, explain the user-visible change, test result, platform assumptions, and why the change stays within the authorization-first scope. Do not include downloaded media, cookies, tokens, credentials, headers, private links, or content you do not have permission to share.

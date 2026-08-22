@@ -26,19 +26,17 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.25.x"
-          cache-dependency-path: cli/go.sum
+          cache-dependency-path: go.sum
       - name: Test and vet Go modules
-        working-directory: cli
         run: |
-          go test ./...
-          go vet ./...
+          go test ./cli/...
+          go vet ./cli/...
       - name: Smoke-test CLI install
         shell: bash
-        working-directory: cli
         run: |
           export GOBIN="$RUNNER_TEMP/media-archiver-bin"
           mkdir -p "$GOBIN"
-          go install ./cmd/open-stream-saver
+          go install ./cli/cmd/open-stream-saver
           if [ "$RUNNER_OS" = "Windows" ]; then
             "$GOBIN/open-stream-saver.exe" --help
           else
@@ -67,7 +65,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.25.x"
-          cache-dependency-path: cli/go.sum
+          cache-dependency-path: go.sum
       - name: Validate release configuration
         uses: goreleaser/goreleaser-action@v6
         with:

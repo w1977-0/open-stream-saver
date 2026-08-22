@@ -20,14 +20,16 @@ ffmpeg -version
 
 Expected result: FFmpeg prints its version. FFmpeg is not needed to build the CLI or to validate a direct-file workflow, and it is not bundled in Media Archiver releases.
 
-## 2. Install the CLI from the canonical module path
+## 2. Install the CLI from the root module
 
-Use a normal Go module environment:
+Media Archiver releases the repository root as the Go module. The CLI source remains under `cli/`, so install its package path with a root release tag:
 
 ```bash
-go install github.com/w1977-0/media-archiver/cli/cmd/open-stream-saver@latest
+go install github.com/w1977-0/media-archiver/cli/cmd/open-stream-saver@v0.3.1
 open-stream-saver --help
 ```
+
+Do not use a `cli/vX.Y.Z` suffix as the version in `go install`; published versions are root repository tags.
 
 Expected result: `open-stream-saver --help` lists commands including `download`, `inspect-hls`, and `completion`. If your shell cannot find the binary, add the Go binary directory reported by `go env GOPATH` to your `PATH`.
 
@@ -37,12 +39,12 @@ Clone the canonical repository and run the same checks used for local developmen
 
 ```bash
 git clone https://github.com/w1977-0/media-archiver.git
-cd media-archiver/cli
-go test ./...
-go vet ./...
-go build -o ../bin/open-stream-saver ./cmd/open-stream-saver
-go build -o ../bin/open-stream-saver-host ./cmd/open-stream-saver-host
-../bin/open-stream-saver --help
+cd media-archiver
+go test ./cli/...
+go vet ./cli/...
+go build -o bin/open-stream-saver ./cli/cmd/open-stream-saver
+go build -o bin/open-stream-saver-host ./cli/cmd/open-stream-saver-host
+./bin/open-stream-saver --help
 ```
 
 Expected result: the tests and vet complete without diagnostics, both binaries build, and the CLI prints help text. This only validates local setup; do not test with private, protected, or unauthorized content.

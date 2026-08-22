@@ -61,8 +61,10 @@ The browser component never intercepts page scripts, rewrites `fetch`/`XMLHttpRe
 With Go 1.25+ installed, this command installs the CLI from the tagged source:
 
 ```bash
-go install github.com/w1977-0/media-archiver/cli/cmd/open-stream-saver@latest
+go install github.com/w1977-0/media-archiver/cli/cmd/open-stream-saver@v0.3.1
 ```
+
+> **Go module layout.** Media Archiver is released as the root module `github.com/w1977-0/media-archiver`; the CLI source intentionally remains under `cli/`. Install the CLI by its package path and pin a root release tag, for example `@v0.3.1`. Do not use a `cli/vX.Y.Z` suffix in the `go install` version.
 
 Alternatively, download your platform archive from [Releases](../../releases). HLS and DASH remux require a locally installed **FFmpeg** on `PATH`; direct-file downloads do not. Use the [installation verification checklist](docs/INSTALLATION_VERIFICATION.md) for expected results from a canonical module install, source build, FFmpeg check, and unpacked extension load.
 

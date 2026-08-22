@@ -29,15 +29,14 @@ The repository contains two independently runnable components.
 git clone https://github.com/w1977-0/media-archiver.git
 cd media-archiver
 
-# Test the Go CLI
-cd cli
-go test ./...
-go vet ./...
-go build ./cmd/open-stream-saver
+# Test the Go CLI from the repository root module
+go test ./cli/...
+go vet ./cli/...
+go build ./cli/cmd/open-stream-saver
 
 # Check Chrome extension JavaScript syntax
-node --check ../extension/background.js
-node --check ../extension/popup.js
+node --check extension/background.js
+node --check extension/popup.js
 ```
 
 For a clean first setup, follow the [installation verification checklist](docs/INSTALLATION_VERIFICATION.md) before testing any media path. It records expected results for Go, FFmpeg, the CLI, and the unpacked extension without requiring a private or protected media sample.
@@ -48,7 +47,7 @@ FFmpeg is only needed when you manually test an authorized, completed, unencrypt
 
 Create a focused branch from `main`. Keep the change small enough to review, explain the user-visible effect, and update the documentation when behavior changes. Use descriptive commit messages such as `fix: reject redirects before download` or `docs: clarify optional extension permissions`.
 
-For Go changes, run `gofmt -w`, `go test ./...`, and `go vet ./...`. Add tests for behavior changes, especially validation, error paths, temporary-file cleanup, concurrency limits, and unsupported-stream rejection. For extension changes, keep Manifest V3 permissions minimal and explain any new permission in the pull request.
+For Go changes, run `gofmt -w`, `go test ./cli/...`, and `go vet ./cli/...` from the repository root. Add tests for behavior changes, especially validation, error paths, temporary-file cleanup, concurrency limits, and unsupported-stream rejection. For extension changes, keep Manifest V3 permissions minimal and explain any new permission in the pull request.
 
 ## Pull request checklist
 
