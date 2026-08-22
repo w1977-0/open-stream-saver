@@ -6,6 +6,11 @@ import (
 	"os/exec"
 )
 
+var (
+	lookupExecutable = exec.LookPath
+	commandContext   = exec.CommandContext
+)
+
 // MergeTS invokes a locally installed FFmpeg to remux already-downloaded local
 // transport-stream segments. It never supplies remote URLs, credentials, keys,
 // cookies, or user-provided shell fragments to FFmpeg.
@@ -14,7 +19,7 @@ func MergeTS(ctx context.Context, concatFile, output string) error {
 	if err != nil {
 		return err
 	}
-	command := exec.CommandContext(ctx, path,
+	command := commandContext(ctx, path,
 		"-hide_banner", "-loglevel", "error", "-y",
 		"-f", "concat", "-safe", "0", "-i", concatFile,
 		"-c", "copy", output,
@@ -42,11 +47,11 @@ func MergeDASH(ctx context.Context, videoConcat, audioConcat, output string) err
 		arguments = append(arguments, "-map", "0:v?")
 	}
 	arguments = append(arguments, "-c", "copy", output)
-	return run(exec.CommandContext(ctx, path, arguments...), "DASH merge")
+	return run(commandContext(ctx, path, arguments...), "DASH merge")
 }
 
 func executable() (string, error) {
-	path, err := exec.LookPath("ffmpeg")
+	path, err := lookupExecutable("ffmpeg")
 	if err != nil {
 		return "", fmt.Errorf("ffmpeg is required for local media merge: install FFmpeg and ensure it is on PATH")
 	}
