@@ -1,0 +1,49 @@
+name: Feature request
+description: Suggest a scope-aligned improvement without requesting access-control bypasses or sensitive-data handling.
+title: "feature: "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for sharing an idea. Media Archiver is limited to user-authorized public, unencrypted media workflows. Do not include private URLs, account data, cookies, tokens, authorization headers, DRM keys, or content you are not authorized to share.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - Go CLI
+        - Chrome extension
+        - Native Messaging host
+        - Documentation
+        - Build or release
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the user-facing need with a non-sensitive, minimal example.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed scope-aligned approach
+      description: Explain a possible approach that stays within public, unencrypted, authorization-first media handling.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Optional. Share existing workflows, documentation, or tools you considered.
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: This request does not ask for DRM decryption, login handling, cookie or credential import, paywall bypasses, regional-restriction bypasses, or request modification.
+          required: true
+        - label: I removed personal information, private links, and protected media from this request.
+          required: true

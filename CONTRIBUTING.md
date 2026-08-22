@@ -43,6 +43,12 @@ For a clean first setup, follow the [installation verification checklist](docs/I
 
 FFmpeg is only needed when you manually test an authorized, completed, unencrypted HLS media playlist. Do not use private, protected, or third-party material as a test fixture.
 
+## Your first contribution
+
+Start with a documentation task when you are new to the project. Choose one small, user-visible correction, such as verifying an installation step or adding a troubleshooting entry, then open an Issue before making a broad change. Fork the repository, make one focused commit, and run the root-module checks shown above before opening a pull request.
+
+A strong first contribution explains what a new user would see, which operating system or toolchain was checked, and why the wording stays within the authorization-first scope. Do not use private URLs, downloaded media, cookies, credentials, tokens, DRM material, or protected content as a reproduction. If you are unsure whether a proposed capability is in scope, open a Feature request first rather than implementing it.
+
 ## Making a change
 
 Create a focused branch from `main`. Keep the change small enough to review, explain the user-visible effect, and update the documentation when behavior changes. Use descriptive commit messages such as `fix: reject redirects before download` or `docs: clarify optional extension permissions`.
