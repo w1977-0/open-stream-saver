@@ -124,6 +124,7 @@ jobs:
           cd dist
           sha256sum open-stream-saver_* > SHA256SUMS.txt
           gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
             --title "Open Stream Saver $TAG" \
             --generate-notes \
             open-stream-saver_* SHA256SUMS.txt
