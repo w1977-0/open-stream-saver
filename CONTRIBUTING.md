@@ -26,8 +26,8 @@ The repository contains two independently runnable components.
 
 ```bash
 # Clone the project
-git clone https://github.com/w1977-0/media-archiver.git
-cd media-archiver
+git clone https://github.com/w1977-0/open-stream-saver.git
+cd open-stream-saver
 
 # Test the Go CLI from the repository root module
 go test ./cli/...

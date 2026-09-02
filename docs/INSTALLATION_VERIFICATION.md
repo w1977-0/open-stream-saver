@@ -25,7 +25,7 @@ Expected result: FFmpeg prints its version. FFmpeg is not needed to build the CL
 Media Archiver releases the repository root as the Go module. The CLI source remains under `cli/`, so install its package path with a root release tag:
 
 ```bash
-go install github.com/w1977-0/media-archiver/cli/cmd/open-stream-saver@v0.3.1
+go install github.com/w1977-0/open-stream-saver/cli/cmd/open-stream-saver@v0.3.1
 open-stream-saver --help
 ```
 
@@ -38,8 +38,8 @@ Expected result: `open-stream-saver --help` lists commands including `download`,
 Clone the canonical repository and run the same checks used for local development:
 
 ```bash
-git clone https://github.com/w1977-0/media-archiver.git
-cd media-archiver
+git clone https://github.com/w1977-0/open-stream-saver.git
+cd open-stream-saver
 go test ./cli/...
 go vet ./cli/...
 go build -o bin/open-stream-saver ./cli/cmd/open-stream-saver

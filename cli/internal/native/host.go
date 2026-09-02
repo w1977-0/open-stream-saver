@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/w1977-0/media-archiver/cli/internal/app"
+	"github.com/w1977-0/open-stream-saver/cli/internal/app"
 )
 
 const (

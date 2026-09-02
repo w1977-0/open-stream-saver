@@ -34,7 +34,7 @@ jobs:
       - name: Smoke-test CLI install
         shell: bash
         run: |
-          export GOBIN="$RUNNER_TEMP/media-archiver-bin"
+          export GOBIN="$RUNNER_TEMP/open-stream-saver-bin"
           mkdir -p "$GOBIN"
           go install ./cli/cmd/open-stream-saver
           if [ "$RUNNER_OS" = "Windows" ]; then

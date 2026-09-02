@@ -1,4 +1,4 @@
-module github.com/w1977-0/media-archiver
+module github.com/w1977-0/open-stream-saver
 
 go 1.25.0
 

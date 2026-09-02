@@ -16,8 +16,8 @@
 [![Go](https://img.shields.io/badge/Go-1.25%2B-00ADD8?logo=go&logoColor=white)](https://go.dev/)
 [![Manifest V3](https://img.shields.io/badge/Chrome-Manifest%20V3-4285F4?logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/)
 [![License](https://img.shields.io/badge/License-Apache--2.0-1769E0)](LICENSE)
-[![Build](https://github.com/w1977-0/media-archiver/actions/workflows/release.yml/badge.svg)](https://github.com/w1977-0/media-archiver/actions/workflows/release.yml)
-[![Release](https://img.shields.io/github/v/release/w1977-0/media-archiver?display_name=tag&sort=semver)](../../releases)
+[![Build](https://github.com/w1977-0/open-stream-saver/actions/workflows/release.yml/badge.svg)](https://github.com/w1977-0/open-stream-saver/actions/workflows/release.yml)
+[![Release](https://img.shields.io/github/v/release/w1977-0/open-stream-saver?display_name=tag&sort=semver)](../../releases)
 
 Media Archiver helps a user review and save **public media they are already authorized to archive**. Its Chrome Manifest V3 extension observes eligible public `.mp4`, `.m3u8`, and `.mpd` requests in the current tab. The Go engine saves one direct file, completed unencrypted HLS presentation, or static unencrypted DASH presentation after an explicit acknowledgement of rights.
 
@@ -61,10 +61,10 @@ The browser component never intercepts page scripts, rewrites `fetch`/`XMLHttpRe
 With Go 1.25+ installed, this command installs the CLI from the tagged source:
 
 ```bash
-go install github.com/w1977-0/media-archiver/cli/cmd/open-stream-saver@v0.3.1
+go install github.com/w1977-0/open-stream-saver/cli/cmd/open-stream-saver@v0.3.1
 ```
 
-> **Go module layout.** Media Archiver is released as the root module `github.com/w1977-0/media-archiver`; the CLI source intentionally remains under `cli/`. Install the CLI by its package path and pin a root release tag, for example `@v0.3.1`. Do not use a `cli/vX.Y.Z` suffix in the `go install` version.
+> **Go module layout.** Media Archiver is released as the root module `github.com/w1977-0/open-stream-saver`; the CLI source intentionally remains under `cli/`. Install the CLI by its package path and pin a root release tag, for example `@v0.3.1`. Do not use a `cli/vX.Y.Z` suffix in the `go install` version.
 
 Alternatively, download your platform archive from [Releases](../../releases). HLS and DASH remux require a locally installed **FFmpeg** on `PATH`; direct-file downloads do not. Use the [installation verification checklist](docs/INSTALLATION_VERIFICATION.md) for expected results from a canonical module install, source build, FFmpeg check, and unpacked extension load.
 
@@ -121,8 +121,8 @@ The extension keeps at most 40 URL records per tab in session storage and remove
 ## Build from source
 
 ```bash
-git clone https://github.com/w1977-0/media-archiver.git
-cd media-archiver/cli
+git clone https://github.com/w1977-0/open-stream-saver.git
+cd open-stream-saver/cli
 go test ./...
 go vet ./...
 go build -o ../bin/open-stream-saver ./cmd/open-stream-saver

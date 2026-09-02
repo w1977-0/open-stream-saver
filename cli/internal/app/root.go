@@ -13,10 +13,10 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/w1977-0/media-archiver/cli/internal/dash"
-	"github.com/w1977-0/media-archiver/cli/internal/direct"
-	"github.com/w1977-0/media-archiver/cli/internal/hls"
-	"github.com/w1977-0/media-archiver/cli/internal/safety"
+	"github.com/w1977-0/open-stream-saver/cli/internal/dash"
+	"github.com/w1977-0/open-stream-saver/cli/internal/direct"
+	"github.com/w1977-0/open-stream-saver/cli/internal/hls"
+	"github.com/w1977-0/open-stream-saver/cli/internal/safety"
 )
 
 var Version = "dev"

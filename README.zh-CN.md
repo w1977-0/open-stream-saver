@@ -15,10 +15,10 @@ Media Archiver 是一个**本地优先、授权优先**的开源项目。Chrome 
 如本机已安装 Go 1.25+，可执行：
 
 ```bash
-go install github.com/w1977-0/media-archiver/cli/cmd/open-stream-saver@v0.3.1
+go install github.com/w1977-0/open-stream-saver/cli/cmd/open-stream-saver@v0.3.1
 ```
 
-> **Go module 结构。** Media Archiver 以仓库根 module `github.com/w1977-0/media-archiver` 发布，CLI 源码有意保留在 `cli/` 目录。安装时应使用 CLI 的 package path，并固定到根版本 tag，例如 `@v0.3.1`；不要在 `go install` 的版本位置使用 `cli/vX.Y.Z` 形式。
+> **Go module 结构。** Media Archiver 以仓库根 module `github.com/w1977-0/open-stream-saver` 发布，CLI 源码有意保留在 `cli/` 目录。安装时应使用 CLI 的 package path，并固定到根版本 tag，例如 `@v0.3.1`；不要在 `go install` 的版本位置使用 `cli/vX.Y.Z` 形式。
 
 也可以从 [Releases](../../releases) 下载相应系统的压缩包。HLS / DASH 的本地合并需要自行安装 **FFmpeg** 并放入 `PATH`；直链下载不需要 FFmpeg。发布包不会捆绑 FFmpeg，便于用户从操作系统软件源或可信上游自行获取。请按[安装验证清单](docs/INSTALLATION_VERIFICATION.md)逐项核对新 module 安装、源码构建、FFmpeg 和已解压扩展的预期结果。
 
