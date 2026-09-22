@@ -41,7 +41,7 @@ node --check extension/popup.js
 
 For a clean first setup, follow the [installation verification checklist](docs/INSTALLATION_VERIFICATION.md) before testing any media path. It records expected results for Go, FFmpeg, the CLI, and the unpacked extension without requiring a private or protected media sample.
 
-After a documentation or setup change, record your own result with the [contributor installation checklist](docs/CONTRIBUTOR_INSTALL_CHECKLIST.md). It asks for the same four checks from the contributor's side — root-module commands, CLI help, the optional FFmpeg check, and the unpacked popup — and states what counts as success for each.
+After a documentation or setup change, record your own result with the [contributor installation checklist](docs/CONTRIBUTOR_INSTALL_CHECKLIST.md). It asks for the same four checks from the contributor's side — root-module commands, CLI help, the optional FFmpeg check, and the unpacked popup — and states what counts as success for each. If one of them fails before any media is involved, the [setup troubleshooting guide](docs/SETUP_TROUBLESHOOTING.md) covers the five usual causes.
 
 FFmpeg is only needed when you manually test an authorized, completed, unencrypted HLS media playlist. Do not use private, protected, or third-party material as a test fixture.
 
