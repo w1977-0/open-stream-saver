@@ -1,4 +1,4 @@
-# Media Archiver
+# open-stream-saver
 
 <p align="center">
   <strong>A local-first Chrome MV3 companion and Go CLI for user-authorized public media.</strong>
@@ -19,11 +19,11 @@
 [![Build](https://github.com/w1977-0/open-stream-saver/actions/workflows/release.yml/badge.svg)](https://github.com/w1977-0/open-stream-saver/actions/workflows/release.yml)
 [![Release](https://img.shields.io/github/v/release/w1977-0/open-stream-saver?display_name=tag&sort=semver)](../../releases)
 
-Media Archiver helps a user review and save **public media they are already authorized to archive**. Its Chrome Manifest V3 extension observes eligible public `.mp4`, `.m3u8`, and `.mpd` requests in the current tab. The Go engine saves one direct file, completed unencrypted HLS presentation, or static unencrypted DASH presentation after an explicit acknowledgement of rights.
+open-stream-saver helps a user review and save **public media they are already authorized to archive**. Its Chrome Manifest V3 extension observes eligible public `.mp4`, `.m3u8`, and `.mpd` requests in the current tab. The Go engine saves one direct file, completed unencrypted HLS presentation, or static unencrypted DASH presentation after an explicit acknowledgement of rights.
 
 ## Product relationship
 
-**Media Archiver is the formal cross-platform core**: a Go CLI plus Chrome Manifest V3 companion for transparent, local-first handling of authorized public media. [Media Saver](https://github.com/w1977-0/media-saver) is its earlier research-stage local GUI, built with Python, Flask, and Streamlit for a simpler on-device workflow. The projects are deliberately complementary rather than duplicate implementations: this repository is the maintained CLI and browser-extension foundation.
+**open-stream-saver is the formal cross-platform core**: a Go CLI plus Chrome Manifest V3 companion for transparent, local-first handling of authorized public media. Media Saver is its earlier research-stage local GUI, built with Python, Flask, and Streamlit for a simpler on-device workflow; it is not published, so there is no repository to link. The projects are deliberately complementary rather than duplicate implementations: this repository is the maintained CLI and browser-extension foundation.
 
 > **Authorization and privacy are design constraints.** The project neither collects nor forwards cookies, authorization headers, tokens, credentials, page bodies, browser storage, encryption keys, or DRM material. It does not bypass logins, subscriptions, paywalls, regional restrictions, proxy controls, encryption, or DRM.
 
@@ -64,7 +64,7 @@ With Go 1.25+ installed, this command installs the CLI from the tagged source:
 go install github.com/w1977-0/open-stream-saver/cli/cmd/open-stream-saver@v0.3.1
 ```
 
-> **Go module layout.** Media Archiver is released as the root module `github.com/w1977-0/open-stream-saver`; the CLI source intentionally remains under `cli/`. Install the CLI by its package path and pin a root release tag, for example `@v0.3.1`. Do not use a `cli/vX.Y.Z` suffix in the `go install` version.
+> **Go module layout.** open-stream-saver is released as the root module `github.com/w1977-0/open-stream-saver`; the CLI source intentionally remains under `cli/`. Install the CLI by its package path and pin a root release tag, for example `@v0.3.1`. Do not use a `cli/vX.Y.Z` suffix in the `go install` version.
 
 Alternatively, download your platform archive from [Releases](../../releases). HLS and DASH remux require a locally installed **FFmpeg** on `PATH`; direct-file downloads do not. Use the [installation verification checklist](docs/INSTALLATION_VERIFICATION.md) for expected results from a canonical module install, source build, FFmpeg check, and unpacked extension load.
 
@@ -102,7 +102,7 @@ Until an appropriate browser-store review is completed, load the unpacked extens
 
 The local-save button is opt-in. Install and register the `open-stream-saver-host` binary using the [Native Messaging host guide](native-host/README.md). Its manifest must list your exact extension ID, so another extension cannot use it.
 
-![Media Archiver local workflow: enable read-only discovery, confirm rights, then save locally](docs/assets/local-workflow.gif)
+![open-stream-saver local workflow: enable read-only discovery, confirm rights, then save locally](docs/assets/local-workflow.gif)
 
 The extension keeps at most 40 URL records per tab in session storage and removes them when the tab closes. It does not send data to a remote service and does not read cookies, headers, page bodies, or account information.
 

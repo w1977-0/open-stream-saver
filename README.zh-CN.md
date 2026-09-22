@@ -1,14 +1,14 @@
-# Media Archiver 中文说明
+# open-stream-saver 中文说明
 
 [English README](README.md) · [常见问题](docs/FAQ.md) · [贡献指南](CONTRIBUTING.md) · [本地主机安装](native-host/README.md)
 
-Media Archiver 是一个**本地优先、授权优先**的开源项目。Chrome 插件以只读方式发现当前标签页中公开加载的 `.mp4`、`.m3u8`、`.mpd` URL；Go CLI 只会在你明确确认拥有保存权利后，保存单个公开直链、已结束且未加密的 HLS 媒体，或静态且未加密的 DASH 媒体。
+open-stream-saver 是一个**本地优先、授权优先**的开源项目。Chrome 插件以只读方式发现当前标签页中公开加载的 `.mp4`、`.m3u8`、`.mpd` URL；Go CLI 只会在你明确确认拥有保存权利后，保存单个公开直链、已结束且未加密的 HLS 媒体，或静态且未加密的 DASH 媒体。
 
 > 本项目不会读取、捕获或转发 Cookie、请求头、Token、账号凭据、页面内容、加密密钥或 DRM 数据；不会绕过登录、订阅、付费墙、地区限制、代理限制、加密或 DRM。
 
 ## 与 Media Saver 的关系
 
-**Media Archiver 是正式的跨平台核心**：以 Go CLI 和 Chrome Manifest V3 插件提供透明、可审阅的本地媒体归档能力。[Media Saver](https://github.com/w1977-0/media-saver) 则是更早期的本地 GUI 研究工具，以 Python、Flask 和 Streamlit 提供较简洁的操作流程。两者不是重复实现：本仓库是持续维护的命令行与浏览器扩展基础。
+**open-stream-saver 是正式的跨平台核心**：以 Go CLI 和 Chrome Manifest V3 插件提供透明、可审阅的本地媒体归档能力。Media Saver 则是更早期的本地 GUI 研究工具，以 Python、Flask 和 Streamlit 提供较简洁的操作流程，该仓库未公开，因此不附链接。两者不是重复实现：本仓库是持续维护的命令行与浏览器扩展基础。
 
 ## 一句话安装
 
@@ -18,7 +18,7 @@ Media Archiver 是一个**本地优先、授权优先**的开源项目。Chrome 
 go install github.com/w1977-0/open-stream-saver/cli/cmd/open-stream-saver@v0.3.1
 ```
 
-> **Go module 结构。** Media Archiver 以仓库根 module `github.com/w1977-0/open-stream-saver` 发布，CLI 源码有意保留在 `cli/` 目录。安装时应使用 CLI 的 package path，并固定到根版本 tag，例如 `@v0.3.1`；不要在 `go install` 的版本位置使用 `cli/vX.Y.Z` 形式。
+> **Go module 结构。** open-stream-saver 以仓库根 module `github.com/w1977-0/open-stream-saver` 发布，CLI 源码有意保留在 `cli/` 目录。安装时应使用 CLI 的 package path，并固定到根版本 tag，例如 `@v0.3.1`；不要在 `go install` 的版本位置使用 `cli/vX.Y.Z` 形式。
 
 也可以从 [Releases](../../releases) 下载相应系统的压缩包。HLS / DASH 的本地合并需要自行安装 **FFmpeg** 并放入 `PATH`；直链下载不需要 FFmpeg。发布包不会捆绑 FFmpeg，便于用户从操作系统软件源或可信上游自行获取。请按[安装验证清单](docs/INSTALLATION_VERIFICATION.md)逐项核对新 module 安装、源码构建、FFmpeg 和已解压扩展的预期结果。
 

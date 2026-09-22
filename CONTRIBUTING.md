@@ -1,4 +1,4 @@
-# Contributing to Media Archiver
+# Contributing to open-stream-saver
 
 Thank you for considering a contribution. This is a small project with a deliberately limited purpose: improve local handling of media that the user is **already authorized** to save. We value clear reasoning, respectful review, reproducible tests, and changes that make the project safer or easier to understand.
 

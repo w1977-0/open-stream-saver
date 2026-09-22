@@ -1,6 +1,6 @@
 # Installation verification checklist
 
-This checklist verifies a **local, authorization-first** installation of Media Archiver. It does not require a private URL, account, cookie, token, protected media sample, or browser-site permission. Passing these steps confirms that the CLI, optional local dependencies, and unpacked extension can start; it does **not** grant permission to save any media.
+This checklist verifies a **local, authorization-first** installation of open-stream-saver. It does not require a private URL, account, cookie, token, protected media sample, or browser-site permission. Passing these steps confirms that the CLI, optional local dependencies, and unpacked extension can start; it does **not** grant permission to save any media.
 
 ## 1. Confirm prerequisites
 
@@ -18,11 +18,11 @@ For HLS or DASH remuxing, also install FFmpeg through your operating system or a
 ffmpeg -version
 ```
 
-Expected result: FFmpeg prints its version. FFmpeg is not needed to build the CLI or to validate a direct-file workflow, and it is not bundled in Media Archiver releases.
+Expected result: FFmpeg prints its version. FFmpeg is not needed to build the CLI or to validate a direct-file workflow, and it is not bundled in open-stream-saver releases.
 
 ## 2. Install the CLI from the root module
 
-Media Archiver releases the repository root as the Go module. The CLI source remains under `cli/`, so install its package path with a root release tag:
+open-stream-saver releases the repository root as the Go module. The CLI source remains under `cli/`, so install its package path with a root release tag:
 
 ```bash
 go install github.com/w1977-0/open-stream-saver/cli/cmd/open-stream-saver@v0.3.1
