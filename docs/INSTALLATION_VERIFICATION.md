@@ -2,6 +2,8 @@
 
 This checklist verifies a **local, authorization-first** installation of open-stream-saver. It does not require a private URL, account, cookie, token, protected media sample, or browser-site permission. Passing these steps confirms that the CLI, optional local dependencies, and unpacked extension can start; it does **not** grant permission to save any media.
 
+If you have changed documentation or local setup and need to record that the toolchain still comes up, use the [contributor installation checklist](CONTRIBUTOR_INSTALL_CHECKLIST.md) instead — it is written for the person who made the change, not for the person installing for the first time.
+
 ## 1. Confirm prerequisites
 
 Install Go **1.25 or newer** and check the active toolchain:
