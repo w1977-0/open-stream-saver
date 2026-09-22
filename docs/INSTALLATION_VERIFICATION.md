@@ -27,7 +27,7 @@ Expected result: FFmpeg prints its version. FFmpeg is not needed to build the CL
 open-stream-saver releases the repository root as the Go module. The CLI source remains under `cli/`, so install its package path with a root release tag:
 
 ```bash
-go install github.com/w1977-0/open-stream-saver/cli/cmd/open-stream-saver@v0.3.1
+go install github.com/w1977-0/open-stream-saver/cli/cmd/open-stream-saver@v0.3.2
 open-stream-saver --help
 ```
 

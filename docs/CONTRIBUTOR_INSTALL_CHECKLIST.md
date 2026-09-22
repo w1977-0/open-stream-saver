@@ -43,7 +43,7 @@ Expected result: the tests pass, `go vet` prints no diagnostics, and both binari
 If you are installing by package path rather than building locally, pin a **root** release tag:
 
 ```bash
-go install github.com/w1977-0/open-stream-saver/cli/cmd/open-stream-saver@v0.3.1
+go install github.com/w1977-0/open-stream-saver/cli/cmd/open-stream-saver@v0.3.2
 ```
 
 Do not write the version as `cli/vX.Y.Z`. Published versions are root repository tags; a `cli/`-prefixed version does not resolve.
