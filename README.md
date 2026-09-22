@@ -122,11 +122,11 @@ The extension keeps at most 40 URL records per tab in session storage and remove
 
 ```bash
 git clone https://github.com/w1977-0/open-stream-saver.git
-cd open-stream-saver/cli
-go test ./...
-go vet ./...
-go build -o ../bin/open-stream-saver ./cmd/open-stream-saver
-go build -o ../bin/open-stream-saver-host ./cmd/open-stream-saver-host
+cd open-stream-saver
+go test ./cli/...
+go vet ./cli/...
+go build -o bin/open-stream-saver ./cli/cmd/open-stream-saver
+go build -o bin/open-stream-saver-host ./cli/cmd/open-stream-saver-host
 ```
 
 Use `goreleaser check` from the repository root to validate the release configuration. Releases intentionally **do not bundle FFmpeg**: it is a separately maintained system component that users should obtain through their operating system or a trusted upstream distributor.
