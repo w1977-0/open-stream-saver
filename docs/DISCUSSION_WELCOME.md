@@ -20,7 +20,7 @@ The local host accepts only a fixed request schema: action, public URL, worker c
 
 **Can I share a failing URL in a public issue?** Only when you have the right to share it and it contains no personal, private, tokenized, credentialed, or protected data. When in doubt, write a minimal synthetic reproduction instead.
 
-For expanded answers, see the repository [FAQ](../blob/main/docs/FAQ.md).
+For expanded answers, see the repository [FAQ](FAQ.md).
 
 ## How to contribute
 
@@ -37,4 +37,4 @@ node --check extension/popup.js
 
 In a pull request, explain the user-visible change, test result, platform assumptions, and why the change stays within the authorization-first scope. Do not include downloaded media, cookies, tokens, credentials, headers, private links, or content you do not have permission to share.
 
-Read [CONTRIBUTING.md](../blob/main/CONTRIBUTING.md), [SECURITY.md](../blob/main/SECURITY.md), and [CODE_OF_CONDUCT.md](../blob/main/CODE_OF_CONDUCT.md) before participating. Thank you for helping us keep the project small, practical, respectful, and reviewable.
+Read [CONTRIBUTING.md](../CONTRIBUTING.md), [SECURITY.md](../SECURITY.md), and [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md) before participating. Thank you for helping us keep the project small, practical, respectful, and reviewable.
